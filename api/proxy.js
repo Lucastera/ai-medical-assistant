@@ -11,8 +11,11 @@ module.exports = (req, res) => {
     target,
     changeOrigin: true,
     pathRewrite: {
-      // 通过路径重写，去除请求路径中的 `/api`
       "^/api/": "/",
+    },
+    onError(err, req, res) {
+      console.error(err);
+      res.status(500).send('Proxy error');
     },
   })(req, res);
 };
