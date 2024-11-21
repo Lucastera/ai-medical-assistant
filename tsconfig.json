@@ -22,6 +22,6 @@
       ]
     }
   },
-  "include": ["src", "api/proxy.js"],
+  "include": ["src", "api/proxy.cjs"],
   "references": [{ "path": "./tsconfig.node.json" }]
 }
