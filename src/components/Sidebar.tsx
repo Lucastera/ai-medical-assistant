@@ -55,7 +55,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
         {conversations.map((conv, index) => (
           <div key={conv.id}>
             <div
-              className={`w-full justify-start py-4 px-5 text-left relative hover:bg-gray-200 ${
+              className={`w-full justify-start py-4 px-5 text-center relative hover:bg-gray-200 ${
                 conv.id === currentConversationId ? "bg-gray-300" : ""
               }`}
               onClick={() => onSelectConversation(conv)}

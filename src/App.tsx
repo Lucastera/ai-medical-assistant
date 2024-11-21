@@ -1,14 +1,15 @@
-import React, { useState, useEffect } from 'react'
-import { Button } from "@/components/ui/button"
-import { LogOut, Home } from 'lucide-react'
-import { Sidebar } from '@/components/Sidebar'
-import { ConversationArea } from '@/components/ConversationArea'
-import { LoginPage } from '@/components/LoginPage'
-import { RegisterPage, User } from '@/components/RegisterPage'
+import React, { useState, useEffect } from "react";
+import { Button } from "@/components/ui/button";
+import { LogOut, Home } from "lucide-react";
+import { Sidebar } from "@/components/Sidebar";
+import { ConversationArea } from "@/components/ConversationArea";
+import { LoginPage } from "@/components/LoginPage";
+import { RegisterPage, User } from "@/components/RegisterPage";
+import { md5Encrypt } from "./utils";
 
 // Simulate AI response
 const simulateAIResponse = (input: string): Promise<MedicalReport> => {
-  console.log(input)
+  console.log(input);
   return new Promise((resolve) => {
     setTimeout(() => {
       resolve({
@@ -27,10 +28,10 @@ const simulateAIResponse = (input: string): Promise<MedicalReport> => {
           treatmentOptions:
             "tests such as electrocardiograms (ECGs), blood tests, and possibly cardiac imaging studies like echocardiography or coronary angiography to confirm the diagnosis and determine the extent of damage to the heart",
         },
-      })
-    }, 1000)
-  })
-}
+      });
+    }, 1000);
+  });
+};
 
 const simulateHospitalRec = (): Promise<HospitalRecommendation> => {
   return new Promise((resolve) => {
@@ -40,21 +41,24 @@ const simulateHospitalRec = (): Promise<HospitalRecommendation> => {
         address: "130 Hip Wo Street, Kwun Tong, Kowloon",
         distance: 10440.38,
         contact: "2379 9611",
-        department: "Accident & Emergency Department"
-      })
-    }, 1000)
-  })
-}
+        department: "Accident & Emergency Department",
+      });
+    }, 1000);
+  });
+};
 
 // Simulate user authentication
-const simulateAuth = (username: string, password: string): Promise<{ success: boolean; username: string }> => {
+const simulateAuth = (
+  username: string,
+  password: string
+): Promise<{ success: boolean; username: string }> => {
+  console.log(md5Encrypt(password));
   return new Promise((resolve) => {
     setTimeout(() => {
-      resolve({ success: true, username })
-    }, 500)
-  })
-}
-
+      resolve({ success: true, username });
+    }, 500);
+  });
+};
 export interface Conversation {
   id: string;
   title: string;
@@ -62,7 +66,7 @@ export interface Conversation {
 }
 
 export interface Message {
-  type: 'user' | 'ai' | 'hospital';
+  type: "user" | "ai" | "hospital";
   content: string | MedicalReport | HospitalRecommendation;
 }
 
@@ -92,135 +96,141 @@ export interface HospitalRecommendation {
 }
 
 const App: React.FC = () => {
-  const [conversations, setConversations] = useState<Conversation[]>([])
-  const [currentConversation, setCurrentConversation] = useState<Conversation | null>(null)
-  const [isLoggedIn, setIsLoggedIn] = useState(false)
-  const [loginUsername, setLoginUsername] = useState('')
-  const [isHomePage, setIsHomePage] = useState(true)
-  const [showLoginPage, setShowLoginPage] = useState(true)
-  const [isSidebarExpanded, setIsSidebarExpanded] = useState(true)
+  const [conversations, setConversations] = useState<Conversation[]>([]);
+  const [currentConversation, setCurrentConversation] =
+    useState<Conversation | null>(null);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [loginUsername, setLoginUsername] = useState("");
+  const [isHomePage, setIsHomePage] = useState(true);
+  const [showLoginPage, setShowLoginPage] = useState(true);
+  const [isSidebarExpanded, setIsSidebarExpanded] = useState(true);
 
   useEffect(() => {
-    const token = localStorage.getItem('token')
+    const token = localStorage.getItem("token");
     if (token) {
       // Validate token with the server
       // For now, we'll just set isLoggedIn to true
-      setIsLoggedIn(true)
-      setLoginUsername(localStorage.getItem('username') || '')
-      loadConversations()
+      setIsLoggedIn(true);
+      setLoginUsername(localStorage.getItem("username") || "");
+      loadConversations();
     }
-  }, [])
+  }, []);
 
   const loadConversations = () => {
-    const storedConversations = localStorage.getItem('conversations')
+    const storedConversations = localStorage.getItem("conversations");
     if (storedConversations) {
-      setConversations(JSON.parse(storedConversations))
+      setConversations(JSON.parse(storedConversations));
     }
-  }
+  };
 
   const saveConversations = (newConversations: Conversation[]) => {
-    localStorage.setItem('conversations', JSON.stringify(newConversations))
-  }
+    localStorage.setItem("conversations", JSON.stringify(newConversations));
+  };
 
   const handleNewConversation = () => {
     const newConversation: Conversation = {
       id: Date.now().toString(),
       title: `Chat at ${new Date().toLocaleString()}`,
-      messages: []
+      messages: [],
+    };
+    const updatedConversations = [...conversations, newConversation];
+    setConversations(updatedConversations);
+    setCurrentConversation(newConversation);
+    setIsHomePage(false);
+    saveConversations(updatedConversations);
   };
-    const updatedConversations = [...conversations, newConversation]
-    setConversations(updatedConversations)
-    setCurrentConversation(newConversation)
-    setIsHomePage(false)
-    saveConversations(updatedConversations)
-  }
 
   const handleSelectConversation = (conversation: Conversation) => {
-    setCurrentConversation(conversation)
-    setIsHomePage(false)
-  }
+    setCurrentConversation(conversation);
+    setIsHomePage(false);
+  };
 
   const handleDeleteConversation = (conversationId: string) => {
-    console.log('aa')
-    const updatedConversations = conversations.filter(conv => conv.id !== conversationId)
-    setConversations(updatedConversations)
-    saveConversations(updatedConversations)
+    console.log("aa");
+    const updatedConversations = conversations.filter(
+      (conv) => conv.id !== conversationId
+    );
+    setConversations(updatedConversations);
+    saveConversations(updatedConversations);
     if (currentConversation?.id === conversationId) {
-      setCurrentConversation(null)
-      setIsHomePage(true)
+      setCurrentConversation(null);
+      setIsHomePage(true);
     }
-  }
+  };
 
   const handleClearHistory = () => {
-    setConversations([])
-    setCurrentConversation(null)
-    setIsHomePage(true)
-    localStorage.removeItem('conversations')
-  }
+    setConversations([]);
+    setCurrentConversation(null);
+    setIsHomePage(true);
+    localStorage.removeItem("conversations");
+  };
 
   const handleLogout = () => {
-    setIsLoggedIn(false)
-    setLoginUsername('')
-    setConversations([])
-    setCurrentConversation(null)
-    setIsHomePage(true)
-    setShowLoginPage(true)
-    localStorage.removeItem('token')
-    localStorage.removeItem('username')
-  }
+    setIsLoggedIn(false);
+    setLoginUsername("");
+    setConversations([]);
+    setCurrentConversation(null);
+    setIsHomePage(true);
+    setShowLoginPage(true);
+    localStorage.removeItem("token");
+    localStorage.removeItem("username");
+  };
 
   const handleGoHome = () => {
-    setIsHomePage(true)
-    setCurrentConversation(null)
-  }
+    setIsHomePage(true);
+    setCurrentConversation(null);
+  };
 
   const handleLogin = async (username: string, password: string) => {
     // Simulate API call
-    const result = await simulateAuth(username, password)
+    const result = await simulateAuth(username, password);
     if (result.success) {
-      setIsLoggedIn(true)
-      setLoginUsername(username)
-      localStorage.setItem('token', 'fake-jwt-token')
-      localStorage.setItem('username', username)
-      loadConversations()
+      setIsLoggedIn(true);
+      setLoginUsername(username);
+      localStorage.setItem("token", "fake-jwt-token");
+      localStorage.setItem("username", username);
+      loadConversations();
     }
-  }
+  };
 
   const handleRegister = async (userData: User) => {
     // Simulate API call
-    const result = await simulateAuth(userData.username, userData.password)
+    const result = await simulateAuth(userData.username, userData.password);
     if (result.success) {
-      setIsLoggedIn(true)
-      setLoginUsername(userData.username)
-      localStorage.setItem('token', 'fake-jwt-token')
-      localStorage.setItem('username', userData.username)
+      setIsLoggedIn(true);
+      setLoginUsername(userData.username);
+      localStorage.setItem("token", "fake-jwt-token");
+      localStorage.setItem("username", userData.username);
     }
-  }
+  };
 
   const handleSendMessage = async (message: string) => {
-    if (!currentConversation) return
+    if (!currentConversation) return;
 
-    const userMessage: Message = { type: 'user', content: message }
+    const userMessage: Message = { type: "user", content: message };
     const updatedConversation = {
       ...currentConversation,
-      messages: [...currentConversation.messages, userMessage]
-    }
-    setCurrentConversation(updatedConversation)
-    const newConversations = conversations.map(conv => conv.id === updatedConversation.id ? updatedConversation : conv)
-    setConversations(newConversations)
-    saveConversations(newConversations)
+      messages: [...currentConversation.messages, userMessage],
+    };
+    setCurrentConversation(updatedConversation);
+    const newConversations = conversations.map((conv) =>
+      conv.id === updatedConversation.id ? updatedConversation : conv
+    );
+    setConversations(newConversations);
+    saveConversations(newConversations);
 
     // Simulate AI thinking
     const thinkingMessage: Message = { type: "ai", content: "thinking" };
     const thinkingConversation = {
       ...updatedConversation,
-      messages: [...updatedConversation.messages, thinkingMessage]
-    }
-    setCurrentConversation(thinkingConversation)
-    const thinkingConversations = conversations.map(conv => conv.id === thinkingConversation.id ? thinkingConversation : conv)
-    setConversations(thinkingConversations)
-    saveConversations(thinkingConversations)
-
+      messages: [...updatedConversation.messages, thinkingMessage],
+    };
+    setCurrentConversation(thinkingConversation);
+    const thinkingConversations = conversations.map((conv) =>
+      conv.id === thinkingConversation.id ? thinkingConversation : conv
+    );
+    setConversations(thinkingConversations);
+    saveConversations(thinkingConversations);
 
     // Simulate AI response
     const newMessages = [...thinkingConversation.messages];
@@ -230,8 +240,8 @@ const App: React.FC = () => {
       lastMessage.type === "ai" &&
       lastMessage.content === "thinking"
     ) {
-      const aiResponse = await simulateAIResponse(message)
-      const aiMessage: Message = { type: 'ai', content: aiResponse }
+      const aiResponse = await simulateAIResponse(message);
+      const aiMessage: Message = { type: "ai", content: aiResponse };
       newMessages.push(aiMessage);
     } else {
       newMessages.push(lastMessage as Message);
@@ -239,55 +249,78 @@ const App: React.FC = () => {
 
     const finalConversation = {
       ...updatedConversation,
-      messages: newMessages
-    }
-    setCurrentConversation(finalConversation)
-    const finalConversations = conversations.map(conv => conv.id === finalConversation.id ? finalConversation : conv)
-    setConversations(finalConversations)
-    saveConversations(finalConversations)
-  }
+      messages: newMessages,
+    };
+    setCurrentConversation(finalConversation);
+    const finalConversations = conversations.map((conv) =>
+      conv.id === finalConversation.id ? finalConversation : conv
+    );
+    setConversations(finalConversations);
+    saveConversations(finalConversations);
+  };
 
   const handleRecommendHospital = async () => {
-    if (!currentConversation) return
+    if (!currentConversation) return;
 
-    const hospitalRecommendation = await simulateHospitalRec()
+    const hospitalRecommendation = await simulateHospitalRec();
 
-    const hospitalMessage: Message = { type: 'hospital', content: hospitalRecommendation }
+    const hospitalMessage: Message = {
+      type: "hospital",
+      content: hospitalRecommendation,
+    };
     const updatedConversation = {
       ...currentConversation,
-      messages: [...currentConversation.messages, hospitalMessage]
-    }
-    setCurrentConversation(updatedConversation)
-    const newConversations = conversations.map(conv => conv.id === updatedConversation.id ? updatedConversation : conv)
-    setConversations(newConversations)
-    saveConversations(newConversations)
-  }
+      messages: [...currentConversation.messages, hospitalMessage],
+    };
+    setCurrentConversation(updatedConversation);
+    const newConversations = conversations.map((conv) =>
+      conv.id === updatedConversation.id ? updatedConversation : conv
+    );
+    setConversations(newConversations);
+    saveConversations(newConversations);
+  };
 
   if (!isLoggedIn) {
     return showLoginPage ? (
-      <LoginPage onLogin={handleLogin} onSwitchToRegister={() => setShowLoginPage(false)} />
+      <LoginPage
+        onLogin={handleLogin}
+        onSwitchToRegister={() => setShowLoginPage(false)}
+      />
     ) : (
-      <RegisterPage onRegister={handleRegister} onSwitchToLogin={() => setShowLoginPage(true)} />
-    )
+      <RegisterPage
+        onRegister={handleRegister}
+        onSwitchToLogin={() => setShowLoginPage(true)}
+      />
+    );
   }
 
   return (
     <div className="flex flex-col h-screen bg-gray-50">
       <header className="bg-white border-b border-gray-200 p-4 flex justify-between items-center">
-        <h1 className="text-2xl font-bold text-gray-800">AI Medical Assistant</h1>
+        <h1 className="text-2xl font-bold text-gray-800">
+          AI Medical Assistant
+        </h1>
         <div className="flex items-center space-x-4">
           <span className="text-gray-600">Welcome, {loginUsername}</span>
-          <Button variant="ghost" onClick={handleGoHome} className="text-gray-600 hover:text-gray-800">
+          <Button
+            variant="ghost"
+            onClick={handleGoHome}
+            className="text-gray-600 hover:text-gray-800"
+          >
             <Home className="mr-2 h-4 w-4" />
             Home
           </Button>
-          <Button variant="ghost" onClick={handleLogout} className="text-gray-600 hover:text-gray-800">
+          <Button
+            variant="ghost"
+            onClick={handleLogout}
+            className="text-gray-600 hover:text-gray-800"
+          >
             <LogOut className="mr-2 h-4 w-4" />
             Logout
           </Button>
         </div>
       </header>
-      <div className="flex flex-grow">
+      <div className="flex flex-grow bg-gray-50">
         <Sidebar
           conversations={conversations}
           currentConversationId={currentConversation?.id}
@@ -307,7 +340,7 @@ const App: React.FC = () => {
         />
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default App
+export default App;

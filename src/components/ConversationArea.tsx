@@ -236,7 +236,7 @@ export const ConversationArea: React.FC<ConversationAreaProps> = ({
                             </div>
                           )
                         ) : (
-                          <div className="bg-white rounded-lg p-6 space-y-4 border border-gray-200">
+                          <div className="bg-white rounded-lg p-6 space-y-4">
                             <h3 className="text-2xl font-bold text-gray-800 flex items-center">
                               <Navigation className="w-6 h-6 text-gray-600 mr-2" />
                               Recommended Hospital
