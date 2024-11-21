@@ -7,48 +7,8 @@ import { LoginPage } from "@/components/LoginPage";
 import { RegisterPage, User } from "@/components/RegisterPage";
 import { getRecommendation, getReport, login, register, test } from "./api";
 import { md5Encrypt } from "./utils";
+import "react-simple-toasts/dist/style.css";
 
-// Simulate AI response
-// const simulateAIResponse = (input: string): Promise<MedicalReport> => {
-//   console.log(input);
-//   return new Promise((resolve) => {
-//     setTimeout(() => {
-//       resolve({
-//         basicInfo: {
-//           age: 45,
-//           gender: "male",
-//           medicalHistory: "No significant medical history",
-//           familyHistory: "Father had heart disease",
-//         },
-//         prompts: {
-//           symptoms: ["chest pain", "shortness of breath"],
-//         },
-//         diagnosis: {
-//           possibleDisease: "acute coronary syndrome (ACS)",
-//           department: "emergency department",
-//           treatmentOptions:
-//             "tests such as electrocardiograms (ECGs), blood tests, and possibly cardiac imaging studies like echocardiography or coronary angiography to confirm the diagnosis and determine the extent of damage to the heart",
-//         },
-//       });
-//     }, 1000);
-//   });
-// };
-
-const simulateHospitalRec = (): Promise<HospitalRecommendation> => {
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      resolve({
-        hospitalName: "United Christian Hospital",
-        address: "130 Hip Wo Street, Kwun Tong, Kowloon",
-        distance: 10440.38,
-        contact: "2379 9611",
-        department: "Accident & Emergency Department",
-      });
-    }, 1000);
-  });
-};
-
-// Simulate user authentication
 const loginAuth = async (username: string, password: string) => {
   const res = await login({
     username,
@@ -160,7 +120,6 @@ const App: React.FC = () => {
   };
 
   const handleDeleteConversation = (conversationId: string) => {
-    console.log("aa");
     const updatedConversations = conversations.filter(
       (conv) => conv.id !== conversationId
     );

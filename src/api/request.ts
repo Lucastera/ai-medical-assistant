@@ -1,5 +1,6 @@
 import axios from "axios";
 import { serverConfig } from "./config";
+import toast from "react-simple-toasts";
 
 // Create axios instance
 const request = axios.create({
@@ -33,6 +34,7 @@ request.interceptors.response.use(
   },
   (error) => {
     console.log(error?.response, "error");
+    toast(error.message, { theme: "failure", position: "top-center"});
     return Promise.reject(error?.message);
   }
 );
