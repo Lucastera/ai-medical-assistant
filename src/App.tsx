@@ -5,33 +5,34 @@ import { Sidebar } from "@/components/Sidebar";
 import { ConversationArea } from "@/components/ConversationArea";
 import { LoginPage } from "@/components/LoginPage";
 import { RegisterPage, User } from "@/components/RegisterPage";
+import { getRecommendation, getReport, login, register, test } from "./api";
 import { md5Encrypt } from "./utils";
 
 // Simulate AI response
-const simulateAIResponse = (input: string): Promise<MedicalReport> => {
-  console.log(input);
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      resolve({
-        basicInfo: {
-          age: 45,
-          gender: "male",
-          medicalHistory: "No significant medical history",
-          familyHistory: "Father had heart disease",
-        },
-        prompts: {
-          symptoms: ["chest pain", "shortness of breath"],
-        },
-        diagnosis: {
-          possibleDisease: "acute coronary syndrome (ACS)",
-          department: "emergency department",
-          treatmentOptions:
-            "tests such as electrocardiograms (ECGs), blood tests, and possibly cardiac imaging studies like echocardiography or coronary angiography to confirm the diagnosis and determine the extent of damage to the heart",
-        },
-      });
-    }, 1000);
-  });
-};
+// const simulateAIResponse = (input: string): Promise<MedicalReport> => {
+//   console.log(input);
+//   return new Promise((resolve) => {
+//     setTimeout(() => {
+//       resolve({
+//         basicInfo: {
+//           age: 45,
+//           gender: "male",
+//           medicalHistory: "No significant medical history",
+//           familyHistory: "Father had heart disease",
+//         },
+//         prompts: {
+//           symptoms: ["chest pain", "shortness of breath"],
+//         },
+//         diagnosis: {
+//           possibleDisease: "acute coronary syndrome (ACS)",
+//           department: "emergency department",
+//           treatmentOptions:
+//             "tests such as electrocardiograms (ECGs), blood tests, and possibly cardiac imaging studies like echocardiography or coronary angiography to confirm the diagnosis and determine the extent of damage to the heart",
+//         },
+//       });
+//     }, 1000);
+//   });
+// };
 
 const simulateHospitalRec = (): Promise<HospitalRecommendation> => {
   return new Promise((resolve) => {
@@ -48,17 +49,28 @@ const simulateHospitalRec = (): Promise<HospitalRecommendation> => {
 };
 
 // Simulate user authentication
-const simulateAuth = (
-  username: string,
-  password: string
-): Promise<{ success: boolean; username: string }> => {
-  console.log(md5Encrypt(password));
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      resolve({ success: true, username });
-    }, 500);
+const loginAuth = async (username: string, password: string) => {
+  const res = await login({
+    username,
+    password,
   });
+  return res;
 };
+
+const registerAuth = async (userData: unknown) => {
+  const res = await register(userData);
+  return res;
+};
+
+const getReportResponse = async (message: string) => {
+  const res = await getReport({ input_text: message });
+  return res;
+};
+
+const searchHospital = async (department: string) => {
+  const res = await getRecommendation({department});
+  return res;
+}
 export interface Conversation {
   id: string;
   title: string;
@@ -106,10 +118,12 @@ const App: React.FC = () => {
   const [isSidebarExpanded, setIsSidebarExpanded] = useState(true);
 
   useEffect(() => {
+    test();
+  }, []);
+
+  useEffect(() => {
     const token = localStorage.getItem("token");
     if (token) {
-      // Validate token with the server
-      // For now, we'll just set isLoggedIn to true
       setIsLoggedIn(true);
       setLoginUsername(localStorage.getItem("username") || "");
       loadConversations();
@@ -182,12 +196,11 @@ const App: React.FC = () => {
   };
 
   const handleLogin = async (username: string, password: string) => {
-    // Simulate API call
-    const result = await simulateAuth(username, password);
-    if (result.success) {
+    const result = await loginAuth(username, md5Encrypt(password));
+    if (result?.data?.token) {
       setIsLoggedIn(true);
       setLoginUsername(username);
-      localStorage.setItem("token", "fake-jwt-token");
+      localStorage.setItem("token", result?.data?.token);
       localStorage.setItem("username", username);
       loadConversations();
     }
@@ -195,12 +208,9 @@ const App: React.FC = () => {
 
   const handleRegister = async (userData: User) => {
     // Simulate API call
-    const result = await simulateAuth(userData.username, userData.password);
-    if (result.success) {
-      setIsLoggedIn(true);
-      setLoginUsername(userData.username);
-      localStorage.setItem("token", "fake-jwt-token");
-      localStorage.setItem("username", userData.username);
+    const result = await registerAuth(userData);
+    if (result.data) {
+      setShowLoginPage(true);
     }
   };
 
@@ -232,7 +242,6 @@ const App: React.FC = () => {
     setConversations(thinkingConversations);
     saveConversations(thinkingConversations);
 
-    // Simulate AI response
     const newMessages = [...thinkingConversation.messages];
     const lastMessage = newMessages.pop();
     if (
@@ -240,8 +249,8 @@ const App: React.FC = () => {
       lastMessage.type === "ai" &&
       lastMessage.content === "thinking"
     ) {
-      const aiResponse = await simulateAIResponse(message);
-      const aiMessage: Message = { type: "ai", content: aiResponse };
+      const aiResponse = await getReportResponse(message);
+      const aiMessage: Message = { type: "ai", content: aiResponse?.data };
       newMessages.push(aiMessage);
     } else {
       newMessages.push(lastMessage as Message);
@@ -262,11 +271,16 @@ const App: React.FC = () => {
   const handleRecommendHospital = async () => {
     if (!currentConversation) return;
 
-    const hospitalRecommendation = await simulateHospitalRec();
+    const aiResponse = currentConversation?.messages?.find(
+      (item) => item?.content !== "thinking" && item?.type === "ai"
+    )?.content;
+    const department = (aiResponse as MedicalReport)?.diagnosis?.department
+
+    const hospitalRecommendation = await searchHospital(department);
 
     const hospitalMessage: Message = {
       type: "hospital",
-      content: hospitalRecommendation,
+      content: hospitalRecommendation?.data,
     };
     const updatedConversation = {
       ...currentConversation,

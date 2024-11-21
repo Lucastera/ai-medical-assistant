@@ -16,6 +16,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "./ui/select";
+import { md5Encrypt } from "@/utils";
 
 export interface User {
   username: string;
@@ -50,7 +51,11 @@ export const RegisterPage: React.FC<RegisterPageProps> = ({
   } as User);
 
   const handleRegister = () => {
-    onRegister(userData);
+    const sendUserData = {
+      ...userData,
+      password: md5Encrypt(userData?.password)
+    }
+    onRegister(sendUserData);
   };
 
   const handleInputChange = (

@@ -1,0 +1,20 @@
+{
+    "rewrites": [
+      {
+        "source": "/login",
+        "destination": "http://103.194.106.195:8000/login"
+      },
+      {
+        "source": "/register",
+        "destination": "http://103.194.106.195:8000/register"
+      },
+      {
+        "source": "/report",
+        "destination": "http://103.194.106.195:8000/report"
+      },
+      {
+        "source": "/search",
+        "destination": "http://103.194.106.195:8000/search"
+      }
+    ]
+  }

@@ -1,4 +1,6 @@
 export const serverConfig = {
-    baseURL: 'https://120.25.76.18/api_1_0', // 请求基础地址,可根据环境自定义
+    baseURL: process.env.NODE_ENV === 'production'
+        ? 'https://103.194.106.195:8000' // 生产环境使用 https
+        : 'http://103.194.106.195:8000', // 非生产环境使用 http
     useTokenAuthorization: true // 是否开启 token 认证
 };
