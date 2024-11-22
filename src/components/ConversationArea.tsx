@@ -183,13 +183,20 @@ export const ConversationArea: React.FC<ConversationAreaProps> = ({
                                   <h4 className="font-semibold text-gray-800 mb-2">
                                     Symptoms
                                   </h4>
-                                  <ul className="list-disc list-inside text-gray-700">
-                                    {(
-                                      message.content as MedicalReport
-                                    ).prompts?.symptoms?.map((symptom, i) => (
-                                      <li key={i}>{symptom}</li>
-                                    ))}
-                                  </ul>
+                                  {(message.content as MedicalReport).prompts
+                                    ?.symptoms?.length > 0 ? (
+                                    <ul className="list-disc list-inside text-gray-700">
+                                      {(
+                                        message.content as MedicalReport
+                                      ).prompts?.symptoms?.map((symptom, i) => (
+                                        <li key={i}>{symptom}</li>
+                                      ))}
+                                    </ul>
+                                  ) : (
+                                    <p className="text-gray-700">
+                                      No symptoms were analyzed.
+                                    </p>
+                                  )}
                                 </div>
                               </div>
 
