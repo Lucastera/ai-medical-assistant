@@ -29,8 +29,7 @@ const getReportResponse = async (message: string) => {
 
 const searchHospital = async (department: string) => {
   const res = await getRecommendation({ department });
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  return transformToHospitalRecommendation(res as any);
+  return transformToHospitalRecommendation(res.data);
 };
 export interface Conversation {
   id: string;
@@ -240,7 +239,7 @@ const App: React.FC = () => {
 
     const hospitalMessage: Message = {
       type: "hospital",
-      content: hospitalRecommendation?.data,
+      content: hospitalRecommendation,
     };
     const updatedConversation = {
       ...currentConversation,
