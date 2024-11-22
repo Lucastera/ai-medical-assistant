@@ -6,7 +6,7 @@ import { ConversationArea } from "@/components/ConversationArea";
 import { LoginPage } from "@/components/LoginPage";
 import { RegisterPage, User } from "@/components/RegisterPage";
 import { getRecommendation, getReport, login, register, test } from "./api";
-import { md5Encrypt } from "./utils";
+import { md5Encrypt, transformToHospitalRecommendation } from "./utils";
 import "react-simple-toasts/dist/style.css";
 
 const loginAuth = async (username: string, password: string) => {
@@ -28,9 +28,10 @@ const getReportResponse = async (message: string) => {
 };
 
 const searchHospital = async (department: string) => {
-  const res = await getRecommendation({department});
-  return res;
-}
+  const res = await getRecommendation({ department });
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  return transformToHospitalRecommendation(res as any);
+};
 export interface Conversation {
   id: string;
   title: string;
@@ -233,7 +234,7 @@ const App: React.FC = () => {
     const aiResponse = currentConversation?.messages?.find(
       (item) => item?.content !== "thinking" && item?.type === "ai"
     )?.content;
-    const department = (aiResponse as MedicalReport)?.diagnosis?.department
+    const department = (aiResponse as MedicalReport)?.diagnosis?.department;
 
     const hospitalRecommendation = await searchHospital(department);
 
