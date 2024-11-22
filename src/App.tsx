@@ -91,7 +91,7 @@ const App: React.FC = () => {
   }, []);
 
   const loadConversations = () => {
-    const storedConversations = localStorage.getItem("conversations");
+    const storedConversations = localStorage.getItem(`conversations_${loginUsername}`);
     if (storedConversations) {
       setConversations(JSON.parse(storedConversations));
     }
@@ -135,7 +135,7 @@ const App: React.FC = () => {
     setConversations([]);
     setCurrentConversation(null);
     setIsHomePage(true);
-    localStorage.removeItem("conversations");
+    localStorage.removeItem(`conversations_${loginUsername}`);
   };
 
   const handleLogout = () => {
