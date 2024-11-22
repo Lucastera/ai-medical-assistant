@@ -98,7 +98,7 @@ const App: React.FC = () => {
   };
 
   const saveConversations = (newConversations: Conversation[]) => {
-    localStorage.setItem("conversations", JSON.stringify(newConversations));
+    localStorage.setItem(`conversations_${loginUsername}`, JSON.stringify(newConversations));
   };
 
   const handleNewConversation = () => {
