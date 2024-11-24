@@ -271,7 +271,7 @@ const App: React.FC = () => {
     <div className="flex flex-col h-screen bg-gray-50">
       <header className="bg-white border-b border-gray-200 p-4 flex justify-between items-center">
         <h1 className="text-2xl font-bold text-gray-800">
-          AI Medical Assistant
+          Medical Chatbot
         </h1>
         <div className="flex items-center space-x-4">
           <span className="text-gray-600">Welcome, {loginUsername}</span>

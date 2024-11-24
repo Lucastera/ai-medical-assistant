@@ -86,7 +86,7 @@ export const ConversationArea: React.FC<ConversationAreaProps> = ({
             <div className="h-full flex flex-col items-center justify-center text-center">
               <Bot className="h-16 w-16 mb-6 text-gray-400" />
               <h2 className="text-3xl font-bold mb-4 text-gray-800">
-                Welcome to AI Medical Assistant
+                Welcome to Medical Chatbot
               </h2>
               <p className="text-lg text-gray-600 mb-8">
                 Your intelligent health companion, ready to answer your medical
