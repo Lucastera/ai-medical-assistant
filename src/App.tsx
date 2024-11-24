@@ -5,6 +5,7 @@ import { Sidebar } from "@/components/Sidebar";
 import { ConversationArea } from "@/components/ConversationArea";
 import { LoginPage } from "@/components/LoginPage";
 import { RegisterPage, User } from "@/components/RegisterPage";
+import { Analytics } from "@vercel/analytics/react"
 import { getRecommendation, getReport, login, register, test } from "./api";
 import { md5Encrypt, transformToHospitalRecommendation } from "./utils";
 import "react-simple-toasts/dist/style.css";
@@ -312,6 +313,7 @@ const App: React.FC = () => {
           onRecommendHospital={handleRecommendHospital}
         />
       </div>
+      <Analytics />
     </div>
   );
 };
